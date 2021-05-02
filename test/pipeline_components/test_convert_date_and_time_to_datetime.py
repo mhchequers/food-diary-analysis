@@ -10,11 +10,14 @@ sys.path.append(home_directory+'/food-diary-analysis/lib')
 print(sys.path)
 from pipeline_components import pipeline_components as pc
 
+def run_component(df, options={}):
+    return pc.ConvertDateAndTimeToDatetime(df, options).run()
+
 def test_empty_input_dataframe():
     input_df = pd.DataFrame({})
 
     with pytest.raises(ValueError) as e:
-        pc.ConvertDateAndTimeToDatetime(input_df, {}).run()
+        run_component(input_df)
     
     assert str(e.value) == 'Required columns [\'date\', \'time\'] are not found in input dataframe columns []'
 
@@ -28,7 +31,7 @@ def test_input_dataframe_with_one_missing_required_columns():
     )
 
     with pytest.raises(ValueError) as e:
-        pc.ConvertDateAndTimeToDatetime(input_df, {}).run()
+        run_component(input_df)
     
     assert str(e.value) == 'Required columns [\'date\', \'time\'] are not found in input dataframe columns [\'date\', \'not_time\', \'another_column\']'
 
@@ -40,7 +43,7 @@ def test_input_dataframe_with_missing_required_columns():
     )
 
     with pytest.raises(ValueError) as e:
-        pc.ConvertDateAndTimeToDatetime(input_df, {}).run()
+        run_component(input_df)
     
     assert str(e.value) == 'Required columns [\'date\', \'time\'] are not found in input dataframe columns [\'column\']'
 
@@ -52,7 +55,7 @@ def test_input_dataframe_with_default_timezone():
         }
     )
 
-    result_df = pc.ConvertDateAndTimeToDatetime(input_df, {}).run()
+    result_df = run_component(input_df)
 
     timezone = pytz.timezone('US/Eastern')
     expected_df = input_df = pd.DataFrame(
@@ -76,7 +79,7 @@ def test_input_dataframe_with_optional_timezone():
         }
     )
 
-    result_df = pc.ConvertDateAndTimeToDatetime(input_df, {"timezone": 'US/Pacific'}).run()
+    result_df = run_component(input_df, {"timezone": 'US/Pacific'})
 
     timezone = pytz.timezone('US/Pacific')
     expected_df = input_df = pd.DataFrame(
