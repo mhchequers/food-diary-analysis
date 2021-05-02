@@ -19,21 +19,21 @@ def test_empty_input_dataframe():
     with pytest.raises(ValueError) as e:
         run_component(input_df)
     
-    assert str(e.value) == 'Required columns [\'date\', \'time\'] are not found in input dataframe columns []'
+    assert str(e.value) == 'Some or all required columns [\'date\', \'time\'] are not found in input dataframe columns []'
 
 def test_input_dataframe_with_one_missing_required_columns():
     input_df = pd.DataFrame(
         {
             'date': ['April 15 2021'],
             'not_time': ['5:00 pm'],
-            'another_column': [1]
+            'another_column': [None]
         }
     )
 
     with pytest.raises(ValueError) as e:
         run_component(input_df)
     
-    assert str(e.value) == 'Required columns [\'date\', \'time\'] are not found in input dataframe columns [\'date\', \'not_time\', \'another_column\']'
+    assert str(e.value) == 'Some or all required columns [\'date\', \'time\'] are not found in input dataframe columns [\'date\', \'not_time\', \'another_column\']'
 
 def test_input_dataframe_with_missing_required_columns():
     input_df = pd.DataFrame(
@@ -45,7 +45,7 @@ def test_input_dataframe_with_missing_required_columns():
     with pytest.raises(ValueError) as e:
         run_component(input_df)
     
-    assert str(e.value) == 'Required columns [\'date\', \'time\'] are not found in input dataframe columns [\'column\']'
+    assert str(e.value) == 'Some or all required columns [\'date\', \'time\'] are not found in input dataframe columns [\'column\']'
 
 def test_input_dataframe_with_default_timezone():
     input_df = pd.DataFrame(
