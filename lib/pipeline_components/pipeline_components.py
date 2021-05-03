@@ -1,6 +1,5 @@
 import pandas as pd
 
-
 class Component:
     def __init__(self, df, options={}):
         self.df = df 
