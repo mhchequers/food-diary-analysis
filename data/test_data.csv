@@ -1,3 +1,5 @@
 Meal ingredients. Be as specific and consistent with naming as possible. Recommended to break all meals down to their fundamental ingredients. List must be comma separated.,"Date of meal in ""month day year"" format","Time of meal, in hh:mm am/pm format","Level of discomfort (bloating, gas, pain, bowl movements) between when this meal was consumed and the next meal. Level is from 0 to 10, 0 being no discomfort and 10 being very uncomfortable. Can be decimal, e.g. 4.6."
 meal_ingredients,date,time,discomfort
 "wheat, sugar, onion, garlic, chicken, peas, corn syrup, lemon",April 18 2021,5:30 PM,3
+"rice, sugar, garlic, roast, peas, carrot",April 20 2021,11:35 AM,4
+"rice, sugar, garlic, roast, peas, carrot",April 21 2021,5:35 PM,4
