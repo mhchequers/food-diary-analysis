@@ -14,6 +14,7 @@ class Component:
                 )
             )
 
+
 class DropColumns(Component):
     def __init__(self, df, options={}):
         super().__init__(df, options)
@@ -26,6 +27,7 @@ class DropColumns(Component):
     
     def run(self):
         return self.df.drop(self.cols_to_drop, axis=1)
+
 
 class ConvertDateAndTimeToDatetime(Component):
     def __init__(self, df, options={}):
@@ -54,3 +56,35 @@ class ConvertDateAndTimeToDatetime(Component):
 
         return self.df.drop(self.cols_to_drop, axis=1)
 
+
+class ConvertStringColumnToListOfStrings(Component):
+    def __init__(self, df, options={}):
+        super().__init__(df, options)
+        self.col_to_convert = self.options.get(
+            "column_to_convert",
+            ""
+        )
+        required_column = self.col_to_convert
+        self._validate_input_columns([required_column], self.df.columns.values.tolist())
+        self.split_separater = self.options.get(
+            "split_separater",
+            ", "
+        )
+        self._validate_column_to_convert_data_type(self.df, self.col_to_convert)
+    
+    def _validate_column_to_convert_data_type(self, df, col_to_convert):
+        col_type = df[col_to_convert].dtypes
+        if col_type != 'O':
+            raise ValueError(
+                'Column to convert {} is not of dtype Object, but is of type {}'.format(
+                    col_to_convert, col_type
+                )
+            )
+
+    def run(self):
+        self.df[self.col_to_convert] = self.df.apply(
+            lambda row: str(row[self.col_to_convert]).split(self.split_separater),
+            axis=1
+        )
+
+        return self.df 
