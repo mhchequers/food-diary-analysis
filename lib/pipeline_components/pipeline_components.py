@@ -87,4 +87,17 @@ class ConvertStringColumnToListOfStrings(Component):
             axis=1
         )
 
-        return self.df 
+        return self.df
+
+class ExplodeColumn(Component):
+    def __init__(self, df, options={}):
+        super().__init__(df, options)
+        self.col_to_explode = self.options.get(
+            "column_to_explode",
+            ""
+        )
+        required_column = self.col_to_explode
+        self._validate_input_columns([required_column], self.df.columns.values.tolist())
+
+    def run(self):
+        return self.df.explode(self.col_to_explode).reset_index(drop=True)
