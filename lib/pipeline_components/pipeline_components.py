@@ -117,4 +117,59 @@ class ExplodeColumn(Component):
     def run(self):
         return self.df.explode(self.col_to_explode).reset_index(drop=True)
 
-class 
+
+class CalculateMeanAndStdDevOfColumn(Component):
+    def __init__(self, df, options={}):
+        super().__init__(df, options)
+        self.cols_to_groupby = self.options.get(
+            "columns_to_groupby",
+            []
+        )
+        self.col_to_aggregate = self.options.get(
+            "column_to_aggregate",
+            ""
+        )
+        required_columns = self.cols_to_groupby + [self.col_to_aggregate]
+        self._validate_input_columns(required_columns, self.df.columns.values.tolist())
+        self._validate_column_to_aggregate([self.col_to_aggregate], self.cols_to_groupby)
+
+    def _validate_column_to_aggregate(self, col_to_aggregate: list, cols_to_groupby: list):
+        # TODO make sure col to aggregate is not in cols to groupby
+        is_col_to_aggregate_in_groupby = set(col_to_aggregate).issubset(set(cols_to_groupby))
+        if is_col_to_aggregate_in_groupby:
+            raise ValueError('Column to aggregate cannot be in columns to groupby')
+    
+    def _get_rename_map(self, original_cols):
+        rename_map = {}
+
+        for col in original_cols:
+            rename_map[col+"_"] = col
+        
+        return rename_map
+    
+    def run(self):
+        # do groupby and aggregation
+        self.df = (
+            self.df
+            .groupby(self.cols_to_groupby)
+            .agg(
+                {
+                    self.col_to_aggregate: ['mean', 'std', 'count']
+                }
+            )
+            .reset_index()
+        )
+
+        # flatten multiindex column by joining with an underscore
+        self.df.columns = self.df.columns.map('_'.join)
+
+        # rename columns in groupby that now end with an underscore to their original column names
+        self.df = (
+            self.df 
+            .rename(
+                columns=self._get_rename_map(self.cols_to_groupby)
+            )
+        )
+
+        return self.df 
+    
