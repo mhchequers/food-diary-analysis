@@ -29,6 +29,20 @@ class DropColumns(Component):
         return self.df.drop(self.cols_to_drop, axis=1)
 
 
+class RenameColumns(Component):
+    def __init__(self, df, options={}):
+        super().__init__(df, options)
+        self.rename_map = self.options.get(
+            "rename_map",
+            {}
+        )
+        required_columns = list(self.rename_map.keys())
+        self._validate_input_columns(required_columns, self.df.columns.values.tolist())
+    
+    def run(self):
+        return self.df.rename(columns=self.rename_map)
+
+
 class ConvertDateAndTimeToDatetime(Component):
     def __init__(self, df, options={}):
         super().__init__(df, options)
@@ -89,6 +103,7 @@ class ConvertStringColumnToListOfStrings(Component):
 
         return self.df
 
+
 class ExplodeColumn(Component):
     def __init__(self, df, options={}):
         super().__init__(df, options)
@@ -101,3 +116,5 @@ class ExplodeColumn(Component):
 
     def run(self):
         return self.df.explode(self.col_to_explode).reset_index(drop=True)
+
+class 
