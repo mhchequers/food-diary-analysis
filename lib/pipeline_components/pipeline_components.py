@@ -1,4 +1,5 @@
 import pandas as pd
+import math
 
 class Component:
     def __init__(self, df, options={}):
@@ -146,6 +147,9 @@ class CalculateMeanAndStdDevOfColumn(Component):
         
         return rename_map
     
+    def _calc_std_mean(self, row):
+        return row[self.col_to_aggregate + '_std'] / math.sqrt(float(row[self.col_to_aggregate + '_count']))
+    
     def run(self):
         # do groupby and aggregation
         self.df = (
@@ -168,6 +172,12 @@ class CalculateMeanAndStdDevOfColumn(Component):
             .rename(
                 columns=self._get_rename_map(self.cols_to_groupby)
             )
+        )
+
+        # add std dev of mean column
+        self.df[self.col_to_aggregate + '_std_error'] = self.df.apply(
+            lambda row: self._calc_std_mean(row),
+            axis=1
         )
 
         return self.df

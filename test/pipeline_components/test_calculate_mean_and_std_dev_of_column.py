@@ -144,7 +144,7 @@ def test_groupby_single_column():
     input_df = pd.DataFrame(
         {
             'col1': ["cat", "dog", "cat", "dog"],
-            'col2': [1, 2, 3, 4]
+            'col2': [1, 2, 3, 5]
         }
     )
 
@@ -156,12 +156,15 @@ def test_groupby_single_column():
         }
     )
 
+    print(result_df)
+
     expected_df = pd.DataFrame(
         {
             'col1': ["cat", "dog"],
-            'col2_mean': [2, 3],
-            'col2_std': [1.414214, 1.414214],
-            'col2_count': [2, 2]
+            'col2_mean': [2, 3.5],
+            'col2_std': [1.414214, 2.121320],
+            'col2_count': [2, 2],
+            'col2_std_error': [1.0, 1.5]
         }
     )
 
@@ -188,7 +191,8 @@ def test_groupby_single_column_with_single_count_aggregate():
             'col1': ["cat", "dog"],
             'col2_mean': [1, 3],
             'col2_std': [math.nan, 1.414214],
-            'col2_count': [1, 2]
+            'col2_count': [1, 2],
+            'col2_std_error': [math.nan, 1.0]
         }
     )
 
@@ -217,7 +221,8 @@ def test_groupby_multiple_columns():
             'col1': ["dog", "cat", "cat"],
             'col2_mean': [3, 3, 1],
             'col2_std': [1.414214, math.nan, math.nan],
-            'col2_count': [2, 1, 1]
+            'col2_count': [2, 1, 1],
+            'col2_std_error': [1.0, math.nan, math.nan]
         }
     )
 
