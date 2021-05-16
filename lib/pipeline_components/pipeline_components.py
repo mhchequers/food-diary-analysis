@@ -134,7 +134,6 @@ class CalculateMeanAndStdDevOfColumn(Component):
         self._validate_column_to_aggregate([self.col_to_aggregate], self.cols_to_groupby)
 
     def _validate_column_to_aggregate(self, col_to_aggregate: list, cols_to_groupby: list):
-        # TODO make sure col to aggregate is not in cols to groupby
         is_col_to_aggregate_in_groupby = set(col_to_aggregate).issubset(set(cols_to_groupby))
         if is_col_to_aggregate_in_groupby:
             raise ValueError('Column to aggregate cannot be in columns to groupby')
@@ -171,5 +170,38 @@ class CalculateMeanAndStdDevOfColumn(Component):
             )
         )
 
-        return self.df 
+        return self.df
+
+
+class SortByColumns(Component):
+    def __init__(self, df, options={}):
+        super().__init__(df, options)
+        self.cols_to_sort_by = self.options.get(
+            "columns_to_sort_by",
+            []
+        )
+        required_columns = self.cols_to_sort_by
+        self._validate_input_columns(required_columns, self.df.columns.values.tolist())
+        self.ascending_flags = self.options.get(
+            "ascending_flags",
+            []
+        )
+        self._validate_ascending_flags(self.cols_to_sort_by, self.ascending_flags)
+    
+    def _validate_ascending_flags(self, sort_by_columns, ascending_flags):
+        if len(sort_by_columns) != len(ascending_flags):
+            raise ValueError('Number of columns to sort is not equal to number of ascending flags')
+        
+        for flag in ascending_flags:
+            if not isinstance(flag, bool):
+                raise ValueError('All ascending flags must be of type boolean')
+
+    def run(self):
+        self.df = (
+            self.df
+            .sort_values(by=self.cols_to_sort_by, ascending=self.ascending_flags)
+            .reset_index(drop=True)
+        )
+
+        return self.df
     
